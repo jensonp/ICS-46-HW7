@@ -13,23 +13,20 @@ void Sorter::fill(int count, string file_name){
     int i=0;
     while(infile>>word && i<count){ vec.push_back(word); ++i; }
 }
-void Sorter::print(ostream & out){
-    for(const auto &word : vec){ out << word << " "; }
-}
+void Sorter::print(ostream & out){ for(const auto &word : vec){out<<word<<" ";} }
 bool Sorter::verify_sorted(){
-    for(size_t i=1; i<vec.size(); ++i){ if (vec[i-1]>vec[i]) return false; }
+    for(size_t i=1; i<vec.size(); ++i){ 
+        if(vec[i-1]>vec[i]) return false; 
+    }
     return true;
 }
 
 // Insertion
 void InsertionSorter::insertionsort(vector<string>& vec, int low, int high) {
-    for (int i=low + 1; i<=high; ++i){
+    for(int i= low+1; i<=high; ++i){
         string key = vec[i];
-        int j = i-1;
-        while (j>=low && vec[j]>key) {
-            vec[j+1] = vec[j];
-            j--;
-        }
+        int j=i-1;
+        while (j>=low && vec[j]>key){ vec[j+1]=vec[j]; --j; }
         vec[j+1] = key;
     }
 }
@@ -39,41 +36,38 @@ void InsertionSorter::sort() {
 }
 
 // Quick
-string QuickSorter::select_pivot(vector<string>& vec, int low, int high) { (void)low; return vec[high]; }
+string QuickSorter::select_pivot(vector<string>& vec, int low, int high){ (void)low; return vec[high]; }
 
-int QuickSorter::partition(vector<string>& vec, int low, int high) {
+int QuickSorter::partition(vector<string>& vec, int low, int high){
     string pivot = select_pivot(vec, low, high);
     int i = low;
-    for (int j = low; j < high; j++) {
+    for (int j=low; j <high; ++j) {
         if (vec[j] < pivot) {
             std::swap(vec[i], vec[j]);
-            i++;
+            ++i;
         }
     }
     std::swap(vec[i], vec[high]);
     return i;
 }
 void QuickSorter::quicksort(vector<string>& vec, int low, int high){
-    if (low < high) {
-        int pi = partition(vec, low, high);
-        quicksort(vec, low, pi-1);
-        quicksort(vec, pi+1, high);
+    if (low<high){
+        quicksort(vec, low, partition(vec, low, high)-1);
+        quicksort(vec, partition(vec, low, high)+1, high);
     }
 }
 void QuickSorter::sort(){
     if (vec.empty()) return;
-    quicksort(vec, 0, vec.size() - 1);
+    quicksort(vec, 0, vec.size()-1);
 }
 
 // Heap
 void HeapSorter::heapify(vector<string>& vec, int n, int i) {
     int largest = i;
-    int left = 2 * i + 1;
-    int right = 2 * i + 2;
-    if (left < n && vec[left] > vec[largest])
-        largest = left;
-    if (right < n && vec[right] > vec[largest])
-        largest = right;
+    int left = 2*i+1;
+    int right = 2*i+2;
+    if (left<n && vec[left] > vec[largest]) largest = left;
+    if (right < n && vec[right] > vec[largest]) largest = right;
     if (largest != i) {
         std::swap(vec[i], vec[largest]);
         heapify(vec, n, largest);
@@ -95,14 +89,12 @@ void HeapSorter::sort() {
 }
 
 static void heapify_range(vector<string>& vec, int low, int high, int i) {
-    int left = 2*(i-low)+1+low;
-    int right = 2*(i-low)+2+low;
-    int largest = i;
-    if (left <= high && vec[left] > vec[largest]) largest = left;
-    if (right <= high && vec[right] > vec[largest]) largest = right;
-    if (largest != i) {
-        std::swap(vec[i], vec[largest]);
-        heapify_range(vec, low, high, largest);
+    int l = 2*(i-low)+1+low, r = 2*(i-low)+2+low, lg=i;
+    if (l<=high && vec[l]>vec[lg]) lg=l;
+    if (r<=high && vec[r]>vec[lg]) lg=r;
+    if (lg!=i) {
+        std::swap(vec[i], vec[lg]);
+        heapify_range(vec, low, high, lg);
     }
 }
 
@@ -111,7 +103,7 @@ static void heap_sort_range(vector<string>& vec, int low, int high) {
     for (int i = low+n/2-1; i>=low; --i){ heapify_range(vec, low, high, i); }
     for (int i = high; i > low; i--) {
         std::swap(vec[low], vec[i]);
-        heapify_range(vec, low, i - 1, low);
+        heapify_range(vec, low, i-1, low);
     }
 }
 
@@ -127,13 +119,11 @@ static void introsort_helper(vector<string>& vec, int low, int high, int depth_l
         return;
     }
     int p = QuickSorter::partition(vec, low, high);
-    introsort_helper(vec, low, p - 1, depth_limit - 1);
-    introsort_helper(vec, p + 1, high, depth_limit - 1);
+    introsort_helper(vec, low, p-1, depth_limit-1);
+    introsort_helper(vec, p+1, high, depth_limit-1);
 }
 void IntroSorter::introsort(vector<string>& vec, int low, int high) {
-    int n = high-low+1;
-    int depth_limit = 2*log(n);
-    introsort_helper(vec, low, high, depth_limit);
+    introsort_helper(vec, low, high, 2*log(high-low+1));
 }
 void IntroSorter::sort() {
     if (vec.empty()) return;
@@ -158,7 +148,7 @@ void ShellSorter::gapInsertionSort(vector<string> & avector, int start, int gap)
     for (int i = start + gap; i < sz; i += gap) {
         string currentvalue = avector[i];
         int position = i;
-        while (position >= gap && avector[position - gap] > currentvalue) {
+        while (position>=gap && avector[position-gap] > currentvalue) {
             avector[position] = avector[position - gap];
             position -= gap;
         }
@@ -211,11 +201,11 @@ void measure_sorters(string input_file) {
     StableSorter ss;
     //ShellSorter sh;
 
-    //measure_partitions(input_file, qs);
-    //measure_partitions(input_file, hs);
-    //measure_partitions(input_file, is);
+    measure_partitions(input_file, qs);
+    measure_partitions(input_file, hs);
+    measure_partitions(input_file, is);
     measure_partitions(input_file, ins);
-    //measure_partitions(input_file, stl);
-    //measure_partitions(input_file, ss);
+    measure_partitions(input_file, stl);
+    measure_partitions(input_file, ss);
     // measure_partitions(input_file, sh);
 }
