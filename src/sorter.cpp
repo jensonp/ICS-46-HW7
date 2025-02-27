@@ -20,20 +20,6 @@ bool Sorter::verify_sorted(){
     return true;
 }
 
-// Insertion
-void InsertionSorter::insertionsort(vector<string>& vec, int low, int high) {
-    for(int i= low+1; i<=high; ++i){
-        string key = vec[i];
-        int j=i-1;
-        while (j>=low && vec[j]>key){ vec[j+1]=vec[j]; --j; }
-        vec[j+1] = key;
-    }
-}
-void InsertionSorter::sort() {
-    if (vec.empty()) return;
-    insertionsort(vec, 0, vec.size()-1);
-}
-
 // Quick
 string QuickSorter::select_pivot(vector<string>& vec, int low, int high){ (void)low; return vec[high]; }
 
@@ -69,7 +55,7 @@ void HeapSorter::heapify(vector<string>& vec, int n, int i){
 }
 
 
-void HeapSorter::heapsort(vector<string>& vec, int low, int high) {
+void HeapSorter::heapsort(vector<string>& vec, int low, int high){
     (void)low; (void)high;
     int n = vec.size();
     for(int i=n/2-1; i >= 0; --i){ heapify(vec, n, i); }
@@ -80,30 +66,42 @@ void HeapSorter::sort() {
     heapsort(vec, 0, vec.size() - 1);
 }
 
-static void heapify_range(vector<string>& vec, int low, int high, int i) {
+static void heapify_range(vector<string>& vec, int low, int high, int i){
     int l=2*(i-low)+1+low, r=2*(i-low)+2+low, lg=i;
     if (l<=high && vec[l]>vec[lg]) lg=l;
     if (r<=high && vec[r]>vec[lg]) lg=r;
     if (lg!=i){ std::swap(vec[i], vec[lg]); heapify_range(vec, low, high, lg); }
 }
 
-static void heap_sort_range(vector<string>& vec, int low, int high) {
+static void heap_sort_range(vector<string>& vec, int low, int high){
     int n=high-low+1;
     for (int i=low+n/2-1; i>=low; --i){ heapify_range(vec, low, high, i); }
     for (int i=high; i>low; --i){ std::swap(vec[low], vec[i]); heapify_range(vec, low, i-1, low); }
+}
+
+// Insertion
+void InsertionSorter::insertionsort(vector<string>& vec, int low, int high){
+    for(int i= low+1; i<=high; ++i){
+        string key = vec[i];
+        int j=i-1;
+        while (j>=low && vec[j]>key){ vec[j+1]=vec[j]; --j; }
+        vec[j+1] = key;
+    }
+}
+void InsertionSorter::sort(){
+    if (vec.empty()) return;
+    insertionsort(vec, 0, vec.size()-1);
 }
 
 // Intro
 static void introsort_helper(vector<string>& vec, int low, int high, int depth_limit){
     int size = high-low+1;
     if (size<=16){ InsertionSorter::insertionsort(vec, low, high); return; }
-    if (depth_limit==0) { heap_sort_range(vec, low, high); return; }
+    if (depth_limit==0){ heap_sort_range(vec, low, high); return; }
     introsort_helper(vec, low, QuickSorter::partition(vec, low, high)-1, depth_limit-1);
     introsort_helper(vec, QuickSorter::partition(vec, low, high)+1, high, depth_limit-1);
 }
-void IntroSorter::introsort(vector<string>& vec, int low, int high) {
-    introsort_helper(vec, low, high, 2*log(high-low+1));
-}
+void IntroSorter::introsort(vector<string>& vec, int low, int high) { introsort_helper(vec, low, high, 2*log(high-low+1)); }
 void IntroSorter::sort() {
     if (vec.empty()) return;
     introsort(vec, 0, vec.size()-1);
@@ -125,18 +123,18 @@ void StableSorter::sort() {
 void ShellSorter::gapInsertionSort(vector<string> & avector, int start, int gap) {
     int s=avector.size();
     for (int i=start+gap; i<s; i+=gap) {
-        string currentvalue = avector[i];
+        string c=avector[i];
         int p=i;
-        while (p>=gap && avector[p-gap] > currentvalue){
+        while (p>=gap && avector[p-gap]>c){
             avector[p] = avector[p-gap];
             p -= gap;
         }
-        avector[p] = currentvalue;
+        avector[p]=c;
     }
 }
 void ShellSorter::shellSort(vector<string> & avector){
-    for (int gap = avector.size()/2; gap>0; gap /= 2){
-        for (int i=0; i< gap; ++i){ gapInsertionSort(avector, i, gap); }
+    for (int gap=avector.size()/2; gap>0; gap /= 2){
+        for (int i=0; i<gap; ++i){ gapInsertionSort(avector, i, gap); }
     }
 }
 void ShellSorter::sort(){
@@ -147,7 +145,7 @@ void ShellSorter::sort(){
 
 // extra
 ostream & operator << (ostream &out, Sorter &L){ L.print(out); return out; }
-void error(string word, string msg) { std::cerr << "Error: " << word << " - " << msg << std::endl; }
+void error(string word, string msg){ std::cerr << "Error: " << word << " - " << msg << std::endl; }
 void measure_partition(int k, string file_name, Sorter & L){
     int limit = k * NWORDS / 10;
     L.fill(limit, file_name);
