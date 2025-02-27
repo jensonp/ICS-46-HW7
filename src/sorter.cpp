@@ -95,13 +95,11 @@ void HeapSorter::sort() {
 }
 
 static void heapify_range(vector<string>& vec, int low, int high, int i) {
-    int left = 2 * (i - low) + 1 + low;
-    int right = 2 * (i - low) + 2 + low;
+    int left = 2*(i-low)+1+low;
+    int right = 2*(i-low)+2+low;
     int largest = i;
-    if (left <= high && vec[left] > vec[largest])
-        largest = left;
-    if (right <= high && vec[right] > vec[largest])
-        largest = right;
+    if (left <= high && vec[left] > vec[largest]) largest = left;
+    if (right <= high && vec[right] > vec[largest]) largest = right;
     if (largest != i) {
         std::swap(vec[i], vec[largest]);
         heapify_range(vec, low, high, largest);
@@ -109,10 +107,8 @@ static void heapify_range(vector<string>& vec, int low, int high, int i) {
 }
 
 static void heap_sort_range(vector<string>& vec, int low, int high) {
-    int n = high - low + 1;
-    for (int i = low + n / 2 - 1; i >= low; i--) {
-        heapify_range(vec, low, high, i);
-    }
+    int n = high-low+1;
+    for (int i = low+n/2-1; i>=low; --i){ heapify_range(vec, low, high, i); }
     for (int i = high; i > low; i--) {
         std::swap(vec[low], vec[i]);
         heapify_range(vec, low, i - 1, low);
@@ -121,12 +117,12 @@ static void heap_sort_range(vector<string>& vec, int low, int high) {
 
 // Intro
 static void introsort_helper(vector<string>& vec, int low, int high, int depth_limit) {
-    int size = high - low + 1;
+    int size = high-low+1;
     if (size <= 16) {
         InsertionSorter::insertionsort(vec, low, high);
         return;
     }
-    if (depth_limit == 0) {
+    if (depth_limit==0) {
         heap_sort_range(vec, low, high);
         return;
     }
