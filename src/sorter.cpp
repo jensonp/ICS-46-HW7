@@ -81,17 +81,16 @@ void HeapSorter::heapify(vector<string>& vec, int n, int i) {
 }
 
 void HeapSorter::heapsort(vector<string>& vec, int low, int high) {
-    (void)low;
-    (void)high;
+    (void)low; (void)high;
     int n = vec.size();
-    for (int i = n / 2 - 1; i >= 0; i--) { heapify(vec, n, i); }
-    for (int i = n - 1; i > 0; i--) {
+    for(int i=n/2-1; i >= 0; --i){ heapify(vec, n, i); }
+    for(int i=n-1; i > 0; --i){
         std::swap(vec[0], vec[i]);
         heapify(vec, i, 0);
     }
 }
 void HeapSorter::sort() {
-    if (vec.empty()) return;
+    if(vec.empty()) return;
     heapsort(vec, 0, vec.size() - 1);
 }
 
