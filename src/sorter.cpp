@@ -14,7 +14,7 @@ void Sorter::fill(int count, string file_name){
     while(infile>>word && i<count){ vec.push_back(word); ++i; }
 }
 void Sorter::print(ostream & out){
-    for(const auto &word : vec){ out << word << "\n"; }
+    for(const auto &word : vec){ out << word << " "; }
 }
 bool Sorter::verify_sorted(){
     for(size_t i=1; i<vec.size(); ++i){ if (vec[i-1]>vec[i]) return false; }
